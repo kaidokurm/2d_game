@@ -1,8 +1,11 @@
-package ee.kaido.game.game;
+package ee.kaido.game.main;
 
-import ee.kaido.game.entities.Player;
-import ee.kaido.game.window.GamePanel;
-import ee.kaido.game.window.GameWindow;
+import ee.kaido.game.audio.AudioPlayer;
+import ee.kaido.game.gamestates.GameOptions;
+import ee.kaido.game.gamestates.Gamestate;
+import ee.kaido.game.gamestates.Menu;
+import ee.kaido.game.gamestates.Playing;
+import ee.kaido.game.ui.AudioOptions;
 
 import java.awt.*;
 
@@ -10,9 +13,14 @@ public class Game implements Runnable {
     private Thread gameThread;
     private GamePanel gamePanel;
     private GameWindow gameWindow;
+    private GameOptions gameOptions;
+    private AudioOptions audioOptions;
+    private AudioPlayer audioPlayer;
     private final int FPS_SET = 120;
     private final int UPS_SET = 200;
-    private Player player;
+
+    private Playing playing;
+    private Menu menu;
 
     public final static int TILES_DEFAULT_SIZE = 32;
     public final static float SCALE = 1.5f;
@@ -26,12 +34,17 @@ public class Game implements Runnable {
         initClasses();
         gamePanel = new GamePanel(this);
         gameWindow = new GameWindow(gamePanel);
+        gamePanel.setFocusable(true);
         gamePanel.requestFocus();
         startGameLoop();
     }
 
     private void initClasses() {
-        player = new Player(200, 200);
+        audioOptions = new AudioOptions(this);
+        audioPlayer = new AudioPlayer();
+        menu = new Menu(this);
+        playing = new Playing(this);
+        gameOptions = new GameOptions(this);
     }
 
     private void startGameLoop() {
@@ -40,11 +53,31 @@ public class Game implements Runnable {
     }
 
     private void update() {
-        player.update();
+        switch (Gamestate.state) {
+            case MENU:
+                menu.update();
+                break;
+            case PLAYING:
+                playing.update();
+                break;
+            case OPTIONS:
+                gameOptions.update();
+                break;
+            case QUIT:
+            default:
+                System.exit(0);
+                break;
+        }
     }
 
     public void render(Graphics g) {
-        player.render(g);
+        switch (Gamestate.state) {
+            case MENU -> menu.draw(g);
+            case PLAYING -> playing.draw(g);
+            case OPTIONS -> gameOptions.draw(g);
+            default -> {
+            }
+        }
     }
 
     @Override
@@ -85,11 +118,30 @@ public class Game implements Runnable {
         }
     }
 
-    public Player getPlayer() {
-        return player;
-    }
 
     public void windowFocusLost() {
-        player.resetDirBooleans();
+        if (Gamestate.state == Gamestate.PLAYING) {
+            playing.getPlayer().resetDirBooleans();
+        }
+    }
+
+    public Menu getMenu() {
+        return menu;
+    }
+
+    public Playing getPlaying() {
+        return playing;
+    }
+
+    public GameOptions getGameOptions() {
+        return gameOptions;
+    }
+
+    public AudioOptions getAudioOptions() {
+        return audioOptions;
+    }
+
+    public AudioPlayer getAudioPlayer() {
+        return audioPlayer;
     }
 }

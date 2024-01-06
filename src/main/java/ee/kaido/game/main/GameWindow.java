@@ -1,4 +1,4 @@
-package ee.kaido.game.window;
+package ee.kaido.game.main;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
@@ -9,9 +9,9 @@ public class GameWindow extends JFrame {
         JFrame jframe = new JFrame();
         jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jframe.add(gamePanel);
-        jframe.setLocationRelativeTo(null);
         jframe.setResizable(false);
         jframe.pack();
+        jframe.setLocationRelativeTo(null);
         jframe.setVisible(true);
         jframe.addWindowFocusListener(new WindowFocusListener() {
             @Override

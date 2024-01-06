@@ -1,8 +1,7 @@
-package ee.kaido.game.window;
+package ee.kaido.game.main;
 
 import ee.kaido.game.inputs.KeyboardInputs;
 import ee.kaido.game.inputs.MouseInputs;
-import ee.kaido.game.main.Game;
 
 import javax.swing.*;
 import java.awt.*;
